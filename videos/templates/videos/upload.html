@@ -1,0 +1,123 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processar Vídeo</title>
+
+    <!-- Incluir o arquivo CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'videos/styles.css' %}">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        form {
+            width: 80%;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        h2, h3 {
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        ul li {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        ul li img {
+            max-width: 200px;
+            border-radius: 8px;
+        }
+    </style>
+
+    <script>
+        function checkFile() {
+            var fileInput = document.getElementById('video');
+            var processButton = document.getElementById('process-btn');
+            
+            // Habilitar/desabilitar o botão de processar com base na seleção de arquivo
+            processButton.disabled = fileInput.files.length === 0;
+        }
+    </script>
+</head>
+<body>
+    <div class="upload_video">
+        <h1>Envie seu vídeo</h1>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'upload_video' %}">
+            {% csrf_token %}
+            
+            <!-- Campo de upload de arquivo -->
+            <label for="video" class="file-label">Escolher Arquivo</label>
+            <input type="file" id="video" name="video" accept="video/*" required onchange="checkFile()">
+            
+            <!-- Botão para enviar e processar o vídeo -->
+            <button type="submit" id="process-btn" disabled>Processar Vídeo</button>
+        </form>
+    </div>
+
+    <!-- Verificar se o vídeo foi enviado e processado -->
+    {% if file_url %}
+        <h2>Vídeo enviado e processado com sucesso!</h2>
+        
+        {% if face_images %}
+            <h3>Faces detectadas:</h3>
+            <ul>
+                {% for face_image in face_images %}
+                    <li><img src="{{ face_image }}" alt="Face Detectada"></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma face detectada no vídeo.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
